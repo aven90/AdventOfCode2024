@@ -4,8 +4,6 @@ import pandas as pd
 # Part 1
 df_input = pd.read_csv("day1/day1.csv", sep=";")
 
-print(df_input)
-
 list_col1 = df_input["col1"].tolist()
 list_col2 = df_input["col2"].tolist()
 
