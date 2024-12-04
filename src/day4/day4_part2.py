@@ -1,10 +1,13 @@
 import re
 
+# open dataset
 with open("src/day4/day4.txt", "r") as f:
     data = f.read().splitlines()
 
-# part 2
+
 """
+Part 2:
+
 It seems we searched the incorrect values
 instead of looking for XMAS we need to look for a X shaped MAS
 F.E
@@ -27,25 +30,29 @@ If all 3 patterns are found in a line we found a XMAS
 Get all patterns, then cross reference the index positions
 """
 
-# def find_pattern_occurance(pattern, data):
-#     position = {}
-#     for index, line in enumerate(data):
-#         found_patterns = [m.start() for m in re.finditer(pattern, line)]
-#         position[index] = found_patterns
-#     return position
+def find_pattern_occurance(pattern: str, data: list[str]) -> dict[int: list[int]]:
+    """
+    Finds all occurrences of a given pattern in each line of the provided data.
 
-def find_pattern_occurance(pattern, data):
+    Args:
+        pattern (str): The regex pattern to search for in the data.
+        data (list of str): A list of strings, each representing a line of data.
+
+    Returns:
+        dict: A dictionary where the keys are line indices and the values are lists of starting positions
+              of the pattern found within each respective line.
+    """
     position = {}
     for index, line in enumerate(data):
-        m_s_patterns = []
+        patterns = []
         pos = 0
         while True:
             m = re.search(pattern, line[pos:])
             if m is None:
                 break
-            m_s_patterns.append(pos + m.start())
+            patterns.append(pos + m.start())
             pos += m.start() + 1
-        position[index] = m_s_patterns
+        position[index] = patterns
     return position
 
 
@@ -56,19 +63,20 @@ s_m_pattern = find_pattern_occurance(r"S.M", data)
 m_m_pattern = find_pattern_occurance(r"M.M", data)  
 s_s_pattern = find_pattern_occurance(r"S.S", data)
 
-# print(data[0])
-# print(m_s_pattern)
-print(f"{m_s_pattern=}\n{a_pattern=}\n{s_m_pattern=}\n{m_m_pattern=}\n{s_s_pattern=}")
+# Now that we have all occurances we can work on the validation part
 
-"""
-for key, val in dict1
-    while key + 2 <= len(dict1.keys()) -1: 
-    for item in val:
-        if item + 1 dict2[k+1]:
-            if item in dict3[k+2]:
-                true
-"""
-def check_pattern(pattern1, pattern2, pattern3):
+def check_pattern(pattern1: dict[int: list[int]], pattern2: dict[int: list[int]], pattern3: dict[int: list[int]]) -> int :
+    """
+    Checks if a pattern is present in the given dictionaries.
+
+    Args:
+        pattern1: The first dictionary to search in.
+        pattern2: The second dictionary to search in.
+        pattern3: The third dictionary to search in.
+
+    Returns:
+        int: The number of times the pattern is found.
+    """
     count = 0
     for key, val in pattern1.items():
         if key + 2 <= len(pattern1.keys()) -1:
@@ -87,4 +95,4 @@ pattern_comb = [
 ]
 
 total_count = sum(map(lambda x:check_pattern(*x), pattern_comb))
-print(total_count)
+print(f"Total 'X-MAS' words found {total_count}")
