@@ -55,8 +55,6 @@ def apply_rules(order, rules):
         return {"order": order, "bad_rule": bad_rule}
 
 
-
-
 checked_orders = [apply_rules(order, rules) for order in order_list]
 correct_orders = [order for order in checked_orders if isinstance(order, list)]
 bad_orders = [order for order in checked_orders if isinstance(order, dict)]
