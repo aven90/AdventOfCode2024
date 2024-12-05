@@ -91,18 +91,14 @@ def change_order(order, rules):
     while not all(checks):
         checks = []
         for rule in applicable:
-            first_index = order.index(rule[0])
-            second_index = order.index(rule[1])
+            first_index, second_index = order.index(rule[0]), order.index(rule[1])
+
             try:
                 assert first_index < second_index
                 checks.append(True)
-                # print(f"rule {rule} is correct")
             except AssertionError:
                 order[first_index], order[second_index] = order[second_index], order[first_index]
                 checks.append(False)
-                # print(f"rule {rule} is incorrect, switched order {order}")
-
-
     return order
 
 
