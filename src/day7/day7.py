@@ -1,5 +1,6 @@
 import itertools
 import re
+import time
 """
 We get a list of values split by :
 before : is the end value
@@ -29,20 +30,30 @@ def calc_expression(expression:str) -> int:
     The method works by iterating over the operators and applying them to the running result.
     The result is then returned.
     """
-    tokens = re.findall(r'\d+|\+|\*', expression)
-    operator_pos = [i for i, c in enumerate(tokens) if c in ['+', '*']]
+    # adjust operatrs for part 2
+    tokens = re.findall(r"(\d+|\|\||\*|\+)", expression)
+    operator_pos = [i for i, c in enumerate(tokens) if c in ['+', '*', '||']]
     result = 0
     for index, ops in enumerate(operator_pos):
-        if index == 0:
-            calc = f"{tokens[ops -1]}{tokens[ops]}{tokens[ops + 1]}"
-            result = eval(calc)
-        else:
-            calc = f"{result}{tokens[ops]}{tokens[ops + 1]}"
-            result = eval(calc)
+        # if the operator is ||, we concatonate the 2
+        if tokens[ops] == '||':
+            if index == 0:
+                calc = f"{tokens[ops - 1]}{tokens[ops + 1]}"
+                result = int(calc)
+            else:
+                calc = f"{result}{tokens[ops + 1]}"
+                result = int(calc)
+        else: 
+            if index == 0:
+                calc = f"{tokens[ops - 1]}{tokens[ops]}{tokens[ops + 1]}"
+                result = eval(calc)
+            else:
+                calc = f"{result}{tokens[ops]}{tokens[ops + 1]}"
+                result = eval(calc)
 
     return result
 
-def find_combinations(nums: list[int], target: int) -> bool:
+def find_combinations(nums: list[int], target: int, part: str) -> bool:
     """
     Find all combinations of + and * operators that can be used to connect
     a list of numbers to get a certain target value.
@@ -55,9 +66,11 @@ def find_combinations(nums: list[int], target: int) -> bool:
         list: A list of strings, where each string is an expression that
         evaluates to the target value
     """
-    operators = ['+', '*']
-    combinations = []
-    found_expressions = []
+    # added || for part 2 to operators
+    if part =="part2":  
+        operators = ['+', '*', '||']
+    else:
+        operators = ['+', '*']
 
     for ops in itertools.product(operators, repeat=len(nums)-1):
         expression = ''
@@ -65,19 +78,49 @@ def find_combinations(nums: list[int], target: int) -> bool:
             expression += str(num)
             if i < len(nums) - 1:
                 expression += ops[i]
+        # print(expression)
         result = calc_expression(expression) 
-        found_expressions.append(expression)
+
         if result == target:
-            combinations.append(expression)
-    if len(combinations) > 0:
-        return True
-    else:
-        return False
+            return True
+
+    return False
 
 correct = []
-for test_value, numbers in dataset:
-    if find_combinations(numbers, test_value):
-        correct.append(test_value)
+for i, val in enumerate(dataset):
+    print(f"{i+1}/{len(dataset)}, {val[0]}")
+    if find_combinations(val[1], val[0], "part1"):
+        correct.append(val[0])
 
 print(sum(correct))
+
+# added validation for part 2 changes, to know base logic still is correct
+try:
+    assert sum(correct) == 4555081946288
+    # assert sum(correct) == 3749  # example input
+    print("Part 1 still okay")
+except AssertionError:
+    print("Part 1 failed")
+
+
+"""
+for part 2 we get an extra operator ||
+|| is concatenate
+we adjust the calculation function and find combination function to handle this operator
+"""
+correct = []
+for i, val in enumerate(dataset):
+    print(f"{i+1}/{len(dataset)}, {val[0]}")
+    if find_combinations(val[1], val[0], "part2"):
+        correct.append(val[0])
+
+print(sum(correct))
+
+# check for refactor after solving
+try:
+    assert sum(correct) == 227921760109726
+    # assert sum(correct) == 11387   # example input
+    print("Part 2 still okay")
+except AssertionError:
+    print("Part 2 failed")
 

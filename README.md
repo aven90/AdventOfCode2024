@@ -14,7 +14,7 @@ The repository is organized by day, with each day's challenge and solution in a 
 The solutions are written in Python
 
 
-# Score
+<!-- # Score
 
 
 | day 1 | day 2 | day 3 | day 4 | day 5 |
@@ -24,7 +24,7 @@ The solutions are written in Python
 
 | day 6 | day 7| day 8 | day 9| day 10 |
 |----|----|----|----|----|
-|  |  |  |  |  |
+| ⭐ | ⭐⭐ |  |  |  |
 
 | day 11 | day 12 | day 13 | day 14 | day 15 |
 |----|----|----|----|----|
@@ -36,7 +36,7 @@ The solutions are written in Python
 
 | day 21 | day 22 | day 23 | day 24 | day 25 |
 |----|----|----|----|----|
-|  |  |  |  |  |
+|  |  |  |  |  | -->
 
 
 
