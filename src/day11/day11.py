@@ -20,28 +20,40 @@ The order is preserved
 how many stones will be there after 25 blinks (iterations)
 """
 
+stone_cache = {}
+
 def solution(data: list[int], total_blinks: int):
-    print(data)
-    stones = np.array(data, dtype=int)
-    print(type(stones))
+    stones = data
+   
     blinks = 0
     while blinks < total_blinks:
         print(F"blinked {blinks} of {total_blinks}, now have {len(stones)} stones")
         new_order = []
 
         for stone in stones:
+
+            if stone in stone_cache.keys():
+                try:
+                    new_order.extend(stone_cache[stone])
+                except TypeError:
+                    new_order.append(stone_cache[stone])
+                continue
+
             stone_str = str(stone)
             if stone == 0:
-                new_order.append(1)
+                result = 1
+                new_order.append(result)
             elif len(stone_str) % 2 == 0:
                 middle = len(stone_str) // 2
                 left = int(stone_str[:middle])
                 right = int(stone_str[middle:])
-                new_order.extend([left, right])
+                result = [left, right]
+                new_order.extend(result)
 
             else:
-                new_num = stone * 2024
-                new_order.append(new_num)
+                result = stone * 2024
+                new_order.append(result)
+            stone_cache[stone] = result
 
         blinks += 1
         stones = np.array(new_order, dtype=int)
