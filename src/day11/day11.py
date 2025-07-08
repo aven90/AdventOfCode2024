@@ -1,4 +1,5 @@
-import numpy as np
+import time
+from functools import cache
 
 """
 Day 11 we are on Pluto
@@ -22,56 +23,102 @@ how many stones will be there after 25 blinks (iterations)
 
 stone_cache = {}
 
-def solution(data: list[int], total_blinks: int):
-    stones = data
-   
-    blinks = 0
-    while blinks < total_blinks:
-        print(F"blinked {blinks} of {total_blinks}, now have {len(stones)} stones")
-        new_order = []
+def solution(stone: int, blinks: int):
+    """
+    This function calculates the total number of stones after a given number of blinks.
 
-        for stone in stones:
+    The function takes two parameters: the current stone number and the number of blinks.
+    The function is recursive and uses memoization to store the results of subproblems.
+    The function returns the total number of stones after the given number of blinks.
 
-            if stone in stone_cache.keys():
-                try:
-                    new_order.extend(stone_cache[stone])
-                except TypeError:
-                    new_order.append(stone_cache[stone])
-                continue
+    The algorithm works as follows:
+    1. If the number of blinks is 0, the function returns 1 (as there is only one stone).
+    2. If the new stone is already calculated, the function returns the result from the cache.
+    3. Else, the function calculates the new stone and keeps calculating until the number of blinks is 0.
+    4. Each time the function is called, the number of blinks is reduced and the number of stones increases with 1 as a counter.
+    5. The function then stores the new stone in the cache.
+    6. Finally, the function returns the count of new stones.
+    """
 
-            stone_str = str(stone)
-            if stone == 0:
-                result = 1
-                new_order.append(result)
-            elif len(stone_str) % 2 == 0:
-                middle = len(stone_str) // 2
-                left = int(stone_str[:middle])
-                right = int(stone_str[middle:])
-                result = [left, right]
-                new_order.extend(result)
+    # define basic case scenario
+    if blinks == 0:
+        return 1
 
-            else:
-                result = stone * 2024
-                new_order.append(result)
-            stone_cache[stone] = result
+    # if new stone is already calculated, return result from cache
+    if (stone, blinks) in stone_cache.keys():
+        return stone_cache[(stone, blinks)]
 
-        blinks += 1
-        stones = np.array(new_order, dtype=int)
-    # print(stones_iteration)
-    total_stones = len(stones)
-    print(f"Found {total_stones} stones after {total_blinks} blinks")
+    # else we calculate new stone, and keep calculating until blinks == 0
+    # each time the function is called, the blinks are reduced and new stone increases with 1 as a counter
+    stone_str = str(stone)
+    if stone == 0:
+        num_stones = solution(1, blinks - 1)
+    elif len(stone_str) % 2 == 0:
+        middle = len(stone_str) // 2
+        left = int(stone_str[:middle])
+        right = int(stone_str[middle:])
+        num_stones = solution(left, blinks - 1) + solution(right, blinks - 1)
+    else:
+        num_stones = solution(stone * 2024, blinks - 1)
+    
+    # store new stone in cache
+    if (stone, blinks) not in stone_cache.keys():
+        stone_cache[(stone, blinks)] = num_stones
+
+    # then return the count of new_stones
+    return num_stones
+
+@cache
+def solution_cache_improved(stone: int, blinks: int):
+    """
+    This function calculates the total number of stones after a given number of blinks.
+
+    The function takes two parameters: the current stone number and the number of blinks.
+    The function is recursive and uses memoization to store the results of subproblems.
+    The function returns the total number of stones after the given number of blinks.
+
+    The algorithm works as follows:
+    1. If the number of blinks is 0, the function returns 1 (as there is only one stone).
+    2. If the new stone is already calculated, the function returns the result from the cache.
+    3. Else, the function calculates the new stone and keeps calculating until the number of blinks is 0.
+    4. Each time the function is called, the number of blinks is reduced and the number of stones increases with 1 as a counter.
+    5. The function then stores the new stone in the cache.
+    6. Finally, the function returns the count of new stones.
+    """
+
+    # define basic case scenario
+    if blinks == 0:
+        return 1
+
+    # else we calculate new stone, and keep calculating until blinks == 0
+    # each time the function is called, the blinks are reduced and new stone increases with 1 as a counter
+    stone_str = str(stone)
+    if stone == 0:
+        num_stones = solution(1, blinks - 1)
+    elif len(stone_str) % 2 == 0:
+        middle = len(stone_str) // 2
+        left = int(stone_str[:middle])
+        right = int(stone_str[middle:])
+        num_stones = solution(left, blinks - 1) + solution(right, blinks - 1)
+    else:
+        num_stones = solution(stone * 2024, blinks - 1)
+
+    # return the count of new_stones
+    return num_stones
     
 
 def main():
     with open("src/day11/input.txt", "r") as f:
         data = f.read().split(" ")
     data = list(map(int, data))
-    # print(data)
-    # part 1
-    solution(data, total_blinks=75)
-    
-    # part 2
-    # solution(data, total_blinks=75)
+
+    start = time.time()
+    # Part 1 blinks = 25, Part 2 blinks = 75
+    total_stones = [solution(stone, blinks=75) for stone in data]
+    total_stones = [solution_cache_improved(stone, blinks=75) for stone in data]
+    print(sum(total_stones))
+    end = time.time()
+    print(f"Total runtime is: {end - start} seconds")
 
 
 if __name__ == "__main__":
